@@ -41,9 +41,12 @@ class ParcelListScreen extends Screen
      */
     public function query(): array
     {
+
         return [
-            'parcels' => Parcel::query()->when(Auth::user(), function ($query) {return $query->where('user_id', Auth::id());})->paginate(10),
+            'parcels' => Parcel::query()->when(Auth::user(), function ($query) {return $query->where('user_id', Auth::id());})->paginate(10)
+
         ];
+
     }
 
     /**
@@ -121,7 +124,6 @@ class ParcelListScreen extends Screen
 
     public function create(Request $request): void
     {
-
         $request->validate([
             'num' => ['required'],
             'phone' => ['required'],
@@ -136,12 +138,11 @@ class ParcelListScreen extends Screen
             'status' => 'pending_reception',
             'barcode' => IdGenerator::generate(['table' => 'parcels','field'=>'barcode', 'length' => 10, 'prefix' =>'P']),
             'user_id' => Auth::user()->id,
-            'parcelsender_id' => $request->has('name'),
-//            'packagerecepient_id' => $request->has('id'),
+            'parcelsender_id' => ParcelSender::where('user_id', Auth::user()->id)->first()->id,
         ])->except('_token'));
         Toast::info('Новая посылка включена в систему');
     }
-    public function deleteParcel($parcel_id)
+    public function deleteParcel($parcel_id, $parcelSender_id)
     {
         $parcel = Parcel::where('id', $parcel_id)->first();
         DB::beginTransaction();

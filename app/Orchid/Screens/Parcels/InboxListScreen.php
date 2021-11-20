@@ -27,6 +27,7 @@ class InboxListScreen extends Screen
     {
         $parcelIdsItesm = PackageRecepient::where('user_id', Auth::id())->pluck('parcel_id')->toArray();
         return [
+            //'parcels' => Parcel::query()->when(Auth::user(), function ($query) {return $query->where('user_id', Auth::id());})->paginate(10),
             'parcels' => Parcel::query()->when($parcelIdsItesm, function ($query, $parcelIdsItesm) {return $query->whereIn('id', $parcelIdsItesm);})->paginate(10),
         ];
     }
